@@ -3,6 +3,7 @@ package pages;
 import credentials.URL;
 import cucumber.api.Scenario;
 import support.DriverQAM;
+import support.DriverQAM_old;
 import support.Hooks;
 
 public class ContextoPage {
@@ -13,8 +14,8 @@ public class ContextoPage {
 	private String classModalPromocao = "closeModal";
 	private String classSpanLocalizacao = "storefinderLocationComponentState";
 	
-	public ContextoPage(DriverQAM driver) {
-		this.driver = driver;
+	public ContextoPage(DriverQAM driverQAM) {
+		this.driver = driverQAM;
 		this.cenario = Hooks.getCenario();
 	}
 	
