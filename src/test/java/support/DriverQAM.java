@@ -2,15 +2,18 @@ package support;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
@@ -126,7 +129,7 @@ public class DriverQAM {
 		}
 		return element;
 	}
-	
+
 	public void clear(String parValue, String... parType) {
 		try {
 			WebElement element = findElem(parValue, parType);
@@ -135,7 +138,35 @@ public class DriverQAM {
 			report(cenario, false, "Não foi possível limpar campo " + parValue, true);
 		}
 	}
-	
+
+	public void moveToElementJs(String parValue, String... parType) {
+
+		WebElement element = findElem(parValue, parType);
+
+		try {
+			((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+			waitSeconds(1);
+		} catch (Exception e) {
+			report(cenario, false, "Não foi possível mover para o elemento " + parValue, true);
+		}
+
+	}
+
+	public void moveToElement(String parValue, String... parType) {
+
+		WebElement element = findElem(parValue, parType);
+
+		Actions actions = new Actions(driver);
+		actions.sendKeys(Keys.PAGE_DOWN);
+		actions.moveToElement(element).click().perform();
+
+	}
+
+	public List<WebElement> findListElements(String parValue, String... parType) {
+		List<WebElement> element = (List<WebElement>) findElem(parValue, parType);
+		return element;
+	}
+
 	public String getText(String parValue, String... parType) {
 
 		try {
@@ -147,28 +178,27 @@ public class DriverQAM {
 		}
 	}
 
-    public void sendEnter() {
-        driver.getKeyboard().sendKeys(Keys.ENTER);
-    }
-	
-    public void sendKeysTab(String texto, String parValue, String... parType) {
-        WebElement element = findElem(parValue, parType);
-        element.sendKeys(texto, Keys.TAB);
-    }
-    
+	public void sendEnter() {
+		driver.getKeyboard().sendKeys(Keys.ENTER);
+	}
+
+	public void sendKeysTab(String texto, String parValue, String... parType) {
+		WebElement element = findElem(parValue, parType);
+		element.sendKeys(texto, Keys.TAB);
+	}
+
 	public void sendKeys(String parText, String parName, String... parType) {
 		WebElement element = findElem(parName, parType);
 		element.sendKeys(parText);
 	}
-	
+
 	public void selectByText(String parText, String parName, String... parType) {
 		try {
 			WebElement element = findElem(parName, parType);
 			Select dropdown = new Select(element);
 			dropdown.selectByVisibleText(parText);
 		} catch (Exception e) {
-			report(cenario, false, "Não foi possível selecionar item " + parText + " no combobox " + parName,
-					true);
+			report(cenario, false, "Não foi possível selecionar item " + parText + " no combobox " + parName, true);
 		}
 	}
 
@@ -275,4 +305,34 @@ public class DriverQAM {
 
 	}
 
+	public void browserScroll(String direction, int coordinate) {
+
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+
+		try {
+			switch (direction) {
+			case "up":
+				js.executeScript("window.scrollBy(0,-" + Integer.toString(coordinate) + ")");
+				break;
+
+			case "down":
+				js.executeScript("window.scrollBy(0," + Integer.toString(coordinate) + ")");
+				break;
+
+			case "left":
+				js.executeScript("window.scrollBy(-" + Integer.toString(coordinate) + ",0)");
+				break;
+
+			case "right":
+				js.executeScript("window.scrollBy(" + Integer.toString(coordinate) + ",0)");
+				break;
+			}
+
+			waitSeconds(1);
+
+		} catch (Exception e) {
+			report(cenario, false, "Não foi possível fazer o scroll " + direction, true);
+		}
+	}
+	
 }
